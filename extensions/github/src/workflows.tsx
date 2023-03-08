@@ -1,5 +1,5 @@
 import { Endpoints } from "@octokit/types";
-import { Action, List } from "@raycast/api";
+import { List } from "@raycast/api";
 import { useCachedPromise } from "@raycast/utils";
 import { useState, useEffect } from "react";
 
@@ -8,6 +8,8 @@ import View from "./components/View";
 import { WorkflowListItem } from "./components/WorkflowListItem";
 import { loadFavorites } from "./helpers/favorite-workflows";
 import { getGitHubClient } from "./helpers/withGithubClient";
+import { useMyRepositories } from "./hooks/useRepositories";
+
 export type WorkflowsResponse = Endpoints["GET /repos/{owner}/{repo}/actions/workflows"]["response"];
 export type Workflow = WorkflowsResponse["data"]["workflows"][0];
 

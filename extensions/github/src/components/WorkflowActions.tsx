@@ -1,11 +1,12 @@
 import { Action, ActionPanel, Icon, showToast, Toast } from "@raycast/api";
 import { MutatePromise } from "@raycast/utils";
 import { Octokit } from "octokit";
+
 import { getErrorMessage } from "../helpers/errors";
 import { addFavoriteWorkflow, isFavoriteWorkflow } from "../helpers/favorite-workflows";
 import { getGitHubClient } from "../helpers/withGithubClient";
-
 import { WorkflowsResponse } from "../workflows";
+
 import { WorkflowForm } from "./WorkflowForm";
 
 export type Workflow = WorkflowsResponse["data"]["workflows"][0];

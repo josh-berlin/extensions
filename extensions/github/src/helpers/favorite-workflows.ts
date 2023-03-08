@@ -1,4 +1,5 @@
 import { Icon, LocalStorage } from "@raycast/api"
+
 import { Workflow } from "../workflows"
 
 export async function loadFavorites(workflows: Workflow[]) {   

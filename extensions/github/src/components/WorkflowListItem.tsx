@@ -1,12 +1,11 @@
 import { List } from "@raycast/api";
 import { MutatePromise } from "@raycast/utils";
-import { accessoryIconForWorkflow } from "../helpers/favorite-workflows";
 
+import { accessoryIconForWorkflow } from "../helpers/favorite-workflows";
 import { WorkflowsResponse } from "../workflows";
 
-import { Workflow, WorkflowActions } from "./WorkflowActions";
-
 import { getLastPathComponent } from "./WorkflowActions";
+import { Workflow, WorkflowActions } from "./WorkflowActions";
 
 type WorkflowListItemProps = {
   workflow: Workflow;

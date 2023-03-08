@@ -1,23 +1,17 @@
 import { Action, ActionPanel, Form, Icon, showToast, Toast } from "@raycast/api";
 import { useCachedPromise } from "@raycast/utils";
+import yaml from 'js-yaml';
+import { Octokit } from "octokit";
+import { useState } from "react";
+
+import { getErrorMessage } from "../helpers/errors";
 import { getGitHubClient } from "../helpers/withGithubClient";
 import { useMyRepositories } from "../hooks/useRepositories";
 import { Workflow } from "../workflows";
-import { useState } from "react";
-import { Octokit } from "octokit";
+
 import { createWorkflowURL, runWorkflow } from "./WorkflowActions";
-import { getErrorMessage } from "../helpers/errors";
-
-const yaml = require('js-yaml');
-
-type WorkflowFormValues = {
-    branch?: string;
-    repository: string;
-    inputs: any;
-};
 
 type WorkflowFormProps = {
-    draftValues?: WorkflowFormValues;
     repository: string
     workflow: Workflow
     branches: any[]
@@ -82,7 +76,7 @@ async function getWorkflowInputs(content: string) {
     const inputs = obj.on.workflow_dispatch.inputs
     const inputsList: Input[] = [];
     for (const key in inputs) {
-        if (inputs.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(inputs, key)) {
             const value = inputs[key];
             inputsList.push({
                 name: key,
@@ -107,7 +101,7 @@ function validateFormValues(inputs: Input[], values: any) {
     return true
 }
 
-export function WorkflowForm({ draftValues, repository, workflow, branches }: WorkflowFormProps) {
+export function WorkflowForm({ repository, workflow, branches }: WorkflowFormProps) {
     const { github } = getGitHubClient();
     const { octokit } = getGitHubClient();
 
