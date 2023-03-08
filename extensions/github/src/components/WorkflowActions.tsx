@@ -18,13 +18,9 @@ export function getLastPathComponent(url: string): string {
 export function createWorkflowURL(workflow: Workflow): string {
   const ymlFile = getLastPathComponent(workflow.path);
   const path = getURLPathExceptLastPathComponent(workflow.url);
-  const url = replaceStringWithStringInPath(
-    path, 
-    "https://api.github.com/repos/", 
-    "https://github.com/"
-  );
+  const url = replaceStringWithStringInPath(path, "https://api.github.com/repos/", "https://github.com/");
   const workflowURL = addPathComponentToURL(url, ymlFile);
-  return workflowURL
+  return workflowURL;
 }
 
 export async function runWorkflow(
@@ -44,12 +40,12 @@ export async function runWorkflow(
       repo: repo,
       workflow_id: workflow.id,
       ref: branch,
-      inputs: inputs
+      inputs: inputs,
     });
 
     await showToast({
       style: Toast.Style.Success,
-      title: "Sent run request"
+      title: "Sent run request",
     });
   } catch (error) {
     await showToast({
@@ -83,7 +79,7 @@ function addPathComponentToURL(url: string, pathComponent: string): string {
   return url + "/" + pathComponent;
 }
 
-export function WorkflowActions({ 
+export function WorkflowActions({
   workflow,
   workflows,
   repository,
@@ -91,7 +87,7 @@ export function WorkflowActions({
   defaultBranch,
   favorites,
   onUpdateFavorites,
-  mutateList 
+  mutateList,
 }: WorkflowActionsProps) {
   const { octokit } = getGitHubClient();
   const [owner, repo] = repository.split("/");
@@ -108,7 +104,7 @@ export function WorkflowActions({
     <ActionPanel>
       <Action.OpenInBrowser title="Open In Browser" url={createWorkflowURL(workflow)} />
       <ActionPanel.Section>
-        <Action.Push 
+        <Action.Push
           title="Run With Options"
           icon={Icon.List}
           target={<WorkflowForm repository={repository} workflow={workflow} branches={branches} />}
@@ -119,7 +115,7 @@ export function WorkflowActions({
           icon={Icon.Clock}
           shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }}
           onAction={() => {
-            runWorkflow(workflow, repository, defaultBranch, {}, octokit)
+            runWorkflow(workflow, repository, defaultBranch, {}, octokit);
           }}
         />
       </ActionPanel.Section>
@@ -129,7 +125,7 @@ export function WorkflowActions({
           icon={favoriteActionIcon(workflow, favorites)}
           shortcut={{ modifiers: ["cmd", "ctrl", "shift"], key: "enter" }}
           onAction={() => {
-            addFavoriteWorkflow(workflow, workflows, onUpdateFavorites)
+            addFavoriteWorkflow(workflow, workflows, onUpdateFavorites);
           }}
         />
       </ActionPanel.Section>

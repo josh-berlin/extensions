@@ -18,7 +18,7 @@ type WorkflowListItemProps = {
   mutateList: MutatePromise<WorkflowsResponse | undefined>;
 };
 
-export function WorkflowListItem({ 
+export function WorkflowListItem({
   workflow,
   workflows,
   repository,
@@ -26,13 +26,13 @@ export function WorkflowListItem({
   defaultBranch,
   favorites,
   onUpdateFavorites,
-  mutateList
+  mutateList,
 }: WorkflowListItemProps) {
   const accessories: List.Item.Accessory[] = [
     {
       text: getLastPathComponent(workflow.path),
       tooltip: workflow.path,
-      icon: accessoryIconForWorkflow(workflow, favorites)
+      icon: accessoryIconForWorkflow(workflow, favorites),
     },
   ];
 
