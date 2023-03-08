@@ -17,6 +17,14 @@ type WorkflowFormProps = {
   branches: any[];
 };
 
+interface WorkflowConfig {
+  on: {
+    workflow_dispatch: {
+      inputs: Input[];
+    };
+  };
+}
+
 type Input = {
   name: string;
   description: string;
@@ -47,18 +55,29 @@ async function getWorkflowContent(octokit: Octokit, repo: string, owner: string,
  * Get the inputs from the workflow file.
  *
  * @param content The content of the workflow file
- * @returns An array of inputs
+ * @returns A Promise that resolves to an array of Input objects.
+ * @throws An error if the YAML content is invalid or if the workflow_dispatch trigger is not found.
  */
-async function getWorkflowInputs(content: string) {
+async function getWorkflowInputs(content: string): Promise<Input[]> {
   if (content.length == 0) {
     return [];
   }
 
   const buff = Buffer.from(content, "base64");
   const text = buff.toString("utf-8");
-  const obj = yaml.load(text);
-  const workflowDispatch = obj.on.workflow_dispatch;
+  let obj: WorkflowConfig;
+  try {
+    obj = yaml.load(text) as WorkflowConfig;
+  } catch (e) {
+    await showToast({
+      style: Toast.Style.Failure,
+      title: "Workflow cannot be run",
+      message: "Error loading workflow configuration",
+    });
+    return [];
+  }
 
+  const workflowDispatch = obj.on.workflow_dispatch;
   if (!workflowDispatch) {
     await showToast({
       style: Toast.Style.Failure,
@@ -68,7 +87,11 @@ async function getWorkflowInputs(content: string) {
     return [];
   }
 
-  const inputs = obj.on.workflow_dispatch.inputs;
+  if (!workflowDispatch.inputs) {
+    return [];
+  }
+
+  const inputs = workflowDispatch.inputs;
   const inputsList: Input[] = [];
   for (const key in inputs) {
     if (Object.prototype.hasOwnProperty.call(inputs, key)) {
@@ -86,7 +109,14 @@ async function getWorkflowInputs(content: string) {
   return inputsList;
 }
 
-function validateFormValues(inputs: Input[], values: any) {
+/**
+ * Validates if all required workflow inputs are present in the form values.
+ *
+ * @param inputs The inputs in the workflow.
+ * @param values The values in the form.
+ * @returns Returns true if all required inputs are present in the form's values object. If any required input is missing, returns false.
+ */
+function validateFormValues(inputs: Input[], values: Form.Values) {
   const requiredInputs = inputs.filter((input) => input.required);
   for (const input of requiredInputs) {
     if (!values[input.name]) {
