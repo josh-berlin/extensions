@@ -11,7 +11,8 @@
     "tholanda",
     "tonka3000",
     "khasbilegt",
-    "pernielsentikaer"
+    "pernielsentikaer",
+    "josh-berlin"
   ],
   "categories": [
     "Developer Tools",
@@ -104,6 +105,12 @@
       "name": "workflow-runs",
       "title": "Workflow Runs",
       "description": "Manage workflow runs for a selected GitHub repository.",
+      "mode": "view"
+    },
+    {
+      "name": "workflows",
+      "title": "Workflows",
+      "description": "Manage workflows for a selected GitHub repository.",
       "mode": "view"
     },
     {
