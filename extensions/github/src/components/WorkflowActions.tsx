@@ -27,11 +27,11 @@ export async function runWorkflow(
   workflow: Workflow,
   repository: string,
   branch: string,
-  inputs: any,
-  octokit: Octokit
+  inputs: any
 ) {
   await showToast({ style: Toast.Style.Animated, title: "Sending run request" });
 
+  const { octokit } = getGitHubClient();
   const [owner, repo] = repository.split("/");
 
   try {
@@ -50,7 +50,7 @@ export async function runWorkflow(
   } catch (error) {
     await showToast({
       style: Toast.Style.Failure,
-      title: "Failed sending re-run request",
+      title: "Failed sending run request",
       message: getErrorMessage(error),
     });
   }
@@ -90,7 +90,6 @@ export function WorkflowActions({
   mutateList,
 }: WorkflowActionsProps) {
   const { octokit } = getGitHubClient();
-  const [owner, repo] = repository.split("/");
 
   function favoriteActionTitle(workflow: Workflow, favorites: Workflow[]) {
     return isFavoriteWorkflow(workflow, favorites) ? "Remove From Favorites" : "Add To Favorites";
@@ -102,7 +101,7 @@ export function WorkflowActions({
 
   return (
     <ActionPanel>
-      <Action.OpenInBrowser title="Open In Browser" url={createWorkflowURL(workflow)} />
+      <Action.OpenInBrowser url={createWorkflowURL(workflow)} />
       <ActionPanel.Section>
         <Action.Push
           title="Run With Options"
@@ -115,7 +114,7 @@ export function WorkflowActions({
           icon={Icon.Clock}
           shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }}
           onAction={() => {
-            runWorkflow(workflow, repository, defaultBranch, {}, octokit);
+            runWorkflow(workflow, repository, defaultBranch, {});
           }}
         />
       </ActionPanel.Section>
@@ -123,7 +122,7 @@ export function WorkflowActions({
         <Action
           title={favoriteActionTitle(workflow, favorites)}
           icon={favoriteActionIcon(workflow, favorites)}
-          shortcut={{ modifiers: ["cmd", "ctrl", "shift"], key: "enter" }}
+          shortcut={{ modifiers: ["cmd", "shift"], key: "f" }}
           onAction={() => {
             addFavoriteWorkflow(workflow, workflows, onUpdateFavorites);
           }}
