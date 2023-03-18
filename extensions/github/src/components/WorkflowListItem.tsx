@@ -28,9 +28,10 @@ export function WorkflowListItem({
   onUpdateFavorites,
   mutateList,
 }: WorkflowListItemProps) {
+  const ymlFileName = getLastPathComponent(workflow.path)
   const accessories: List.Item.Accessory[] = [
     {
-      text: getLastPathComponent(workflow.path),
+      text: ymlFileName,
       tooltip: workflow.path,
       icon: accessoryIconForWorkflow(workflow, favorites),
     },
@@ -40,6 +41,7 @@ export function WorkflowListItem({
     <List.Item
       title={workflow.name}
       accessories={accessories}
+      keywords={[ymlFileName]}
       actions={
         <WorkflowActions
           workflow={workflow}
