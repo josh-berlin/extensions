@@ -150,12 +150,8 @@ export function WorkflowForm({ repository, workflow, branches }: WorkflowFormPro
 
   const { data: inputData, isLoading: inputIsLoading } = useCachedPromise(
     async (workflow) => {
-      try {
-        const content = await getWorkflowContent(octokit, repo, owner, workflow);
-        return await getWorkflowInputs(content);
-      } catch {
-        return [];
-      }
+      const content = await getWorkflowContent(octokit, repo, owner, workflow);
+      return await getWorkflowInputs(content);
     },
     [workflow]
   );
@@ -188,7 +184,7 @@ export function WorkflowForm({ repository, workflow, branches }: WorkflowFormPro
 
       validateFormValues(inputData, values);
 
-      await runWorkflow(workflow, repository, selectedBranch, values, octokit);
+      await runWorkflow(workflow, repository, selectedBranch, values);
     } catch (error) {
       await showToast({
         style: Toast.Style.Failure,
