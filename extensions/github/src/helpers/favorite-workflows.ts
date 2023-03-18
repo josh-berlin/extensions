@@ -45,7 +45,7 @@ export async function addFavoriteWorkflow(
 
 export function accessoryIconForWorkflow(workflow: Workflow, favorites: Workflow[]) {
   const isFavorite = favorites.some((favorite) => favorite.id === workflow.id);
-  return isFavorite ? { source: Icon.Stars, tintColor: Color.Yellow } : null
+  return isFavorite ? { source: Icon.Stars, tintColor: Color.Yellow } : null;
 }
 
 export function sortWorkflows(workflows: Workflow[]): Workflow[] {

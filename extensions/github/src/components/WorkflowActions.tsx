@@ -23,12 +23,7 @@ export function createWorkflowURL(workflow: Workflow): string {
   return workflowURL;
 }
 
-export async function runWorkflow(
-  workflow: Workflow,
-  repository: string,
-  branch: string,
-  inputs: any
-) {
+export async function runWorkflow(workflow: Workflow, repository: string, branch: string, inputs: any) {
   await showToast({ style: Toast.Style.Animated, title: "Sending run request" });
 
   const { octokit } = getGitHubClient();

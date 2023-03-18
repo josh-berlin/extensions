@@ -28,7 +28,7 @@ export function WorkflowListItem({
   onUpdateFavorites,
   mutateList,
 }: WorkflowListItemProps) {
-  const ymlFileName = getLastPathComponent(workflow.path)
+  const ymlFileName = getLastPathComponent(workflow.path);
   const accessories: List.Item.Accessory[] = [
     {
       text: ymlFileName,
