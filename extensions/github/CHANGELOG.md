@@ -1,5 +1,9 @@
 # GitHub Changelog
 
+## [Workflows Command] - 2023-03-17
+
+- Add `Workflows` command
+
 ## [Clear form fields] - 2023-01-19
 
 - Clear form fields when creating an issue
