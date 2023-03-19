@@ -118,7 +118,7 @@ function Workflows() {
   return (
     <List
       isLoading={isLoading || repositoryIsLoading || isLoadingFavorites}
-      searchBarPlaceholder="Filter by name"
+      searchBarPlaceholder="Filter by name or file name"
       searchBarAccessory={
         <RepositoriesDropdown setSelectedRepository={setSelectedRepository} withAllRepositories={false} />
       }
