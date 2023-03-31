@@ -1,8 +1,8 @@
 import { Action, ActionPanel, Form, Icon, showToast, Toast } from "@raycast/api";
-import { useCachedPromise } from "@raycast/utils";
+import { useCachedPromise, useForm } from "@raycast/utils";
 import yaml from "js-yaml";
 import { Octokit } from "octokit";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { getErrorMessage } from "../helpers/errors";
 import { getGitHubClient } from "../helpers/withGithubClient";
@@ -126,6 +126,9 @@ function validateFormValues(inputs: Input[], values: Form.Values) {
   return true;
 }
 
+// The form values are loaded from the yml file inputs.
+interface WorkflowFormValues {}
+
 export function WorkflowForm({ repository, workflow, branches }: WorkflowFormProps) {
   const { github } = getGitHubClient();
   const { octokit } = getGitHubClient();
@@ -148,14 +151,6 @@ export function WorkflowForm({ repository, workflow, branches }: WorkflowFormPro
     repositoryData?.repository?.defaultBranchRef?.name ?? ""
   );
 
-  const { data: inputData, isLoading: inputIsLoading } = useCachedPromise(
-    async (workflow) => {
-      const content = await getWorkflowContent(octokit, repo, owner, workflow);
-      return await getWorkflowInputs(content);
-    },
-    [workflow]
-  );
-
   /**
    * Stores the input error strings.
    */
@@ -173,33 +168,80 @@ export function WorkflowForm({ repository, workflow, branches }: WorkflowFormPro
     }
   };
 
-  async function onSubmit(values: Form.Values) {
-    try {
-      if (!inputData) {
-        return;
+  const [customFieldInitialValues, setCustomFieldInitialValues] = useState({});
+  const [customFieldsValidation, setCustomFieldsValidation] = useState({});
+
+  const { handleSubmit } = useForm<Form.Values>({
+    async onSubmit(values) {
+      try {
+        if (!inputData) {
+          return;
+        }
+  
+        // Remove the branch from the form values, and pass the remaining values as inputs.
+        delete values.branch;
+  
+        await runWorkflow(workflow, repository, selectedBranch, values);
+      } catch (error) {
+        await showToast({
+          style: Toast.Style.Failure,
+          title: "Inputs are invalid",
+          message: getErrorMessage(error),
+        });
       }
+    },
+    initialValues:  {
+      ...customFieldInitialValues
+    },
+    validation: {
+      ...customFieldsValidation,
+    },
+  });
 
-      // Remove the branch from the form values, and pass the remaining values as inputs.
-      delete values.branch;
+  const { data: inputData, isLoading: inputIsLoading } = useCachedPromise(
+    async (workflow) => {
+      const content = await getWorkflowContent(octokit, repo, owner, workflow);
+      return await getWorkflowInputs(content);
+    },
+    [workflow]
+  );
 
-      validateFormValues(inputData, values);
-
-      await runWorkflow(workflow, repository, selectedBranch, values);
-    } catch (error) {
-      await showToast({
-        style: Toast.Style.Failure,
-        title: "Inputs are invalid",
-        message: getErrorMessage(error),
-      });
+  // Set the initial values of the form to the yml file inputs.
+  useEffect(() => {
+    if (inputData) {
+      const initialValues = inputData.reduce<Record<string, string | boolean>>((acc, input) => {
+        acc[input.name] = input.default;
+        return acc;
+      }, {});
+      setCustomFieldInitialValues(initialValues);
     }
-  }
+  }, [inputData]);
+
+  type FormValidationRule = {
+    required?: boolean;
+  };
+  
+  type FormValidationRules = Record<string, FormValidationRule>;
+
+  // Set the initial validation rules based on the required values of the yml file inputs.
+  useEffect(() => {
+    if (inputData) {
+      const validations = inputData.reduce<FormValidationRules>((acc, input) => {
+        if (input.required) {
+          acc[input.name] = { required: true };
+        }
+        return acc;
+      }, {});
+      setCustomFieldsValidation(validations);
+    }
+  }, [inputData]);
 
   return (
     <Form
       navigationTitle={workflow.name}
       actions={
         <ActionPanel>
-          <Action.SubmitForm onSubmit={onSubmit} title="Run Workflow" icon={Icon.Clock} />
+          <Action.SubmitForm onSubmit={handleSubmit} title="Run Workflow" icon={Icon.Clock} />
           <Action.OpenInBrowser title="Open In Browser" url={createWorkflowURL(workflow)} />
         </ActionPanel>
       }
@@ -251,10 +293,10 @@ export function WorkflowForm({ repository, workflow, branches }: WorkflowFormPro
                   id={input.name}
                   title={input.name}
                   defaultValue={input.default}
-                  onBlur={(event) => {
-                    updateInputErrors(input.name, event.target.value);
-                  }}
-                  error={inputErrors[input.name]}
+                  // onBlur={(event) => {
+                  //   updateInputErrors(input.name, event.target.value);
+                  // }}
+                  // error={inputErrors[input.name]}
                 />
               );
             }
