@@ -177,10 +177,10 @@ export function WorkflowForm({ repository, workflow, branches }: WorkflowFormPro
         if (!inputData) {
           return;
         }
-  
+
         // Remove the branch from the form values, and pass the remaining values as inputs.
         delete values.branch;
-  
+
         await runWorkflow(workflow, repository, selectedBranch, values);
       } catch (error) {
         await showToast({
@@ -190,8 +190,8 @@ export function WorkflowForm({ repository, workflow, branches }: WorkflowFormPro
         });
       }
     },
-    initialValues:  {
-      ...customFieldInitialValues
+    initialValues: {
+      ...customFieldInitialValues,
     },
     validation: {
       ...customFieldsValidation,
@@ -220,7 +220,7 @@ export function WorkflowForm({ repository, workflow, branches }: WorkflowFormPro
   type FormValidationRule = {
     required?: boolean;
   };
-  
+
   type FormValidationRules = Record<string, FormValidationRule>;
 
   // Set the initial validation rules based on the required values of the yml file inputs.
