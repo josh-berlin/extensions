@@ -26,7 +26,6 @@ type IssueActionsProps = {
   issue: Issue | TIssueDetail;
   mutate?: MutatePromise<Issue[] | undefined>;
   mutateDetail?: MutatePromise<Issue | TIssueDetail | null>;
-  showDetailsAction?: boolean;
   showAttachmentsAction?: boolean;
 };
 
@@ -35,13 +34,7 @@ type MutateParams = {
   optimisticUpdate: <T extends Issue>(task: T) => T;
 };
 
-export default function IssueActions({
-  issue,
-  mutate,
-  mutateDetail,
-  showDetailsAction,
-  showAttachmentsAction,
-}: IssueActionsProps) {
+export default function IssueActions({ issue, mutate, mutateDetail, showAttachmentsAction }: IssueActionsProps) {
   const { siteUrl, myself } = getJiraCredentials();
   const issueUrl = `${siteUrl}/browse/${issue.key}`;
 
@@ -107,13 +100,11 @@ export default function IssueActions({
   return (
     <ActionPanel title={issue.key}>
       <ActionPanel.Section>
-        {showDetailsAction ? (
-          <Action.Push
-            title="Show Details"
-            icon={Icon.Sidebar}
-            target={<IssueDetail initialIssue={issue} issueKey={issue.key} />}
-          />
-        ) : null}
+        <Action.Push
+          title="Show Details"
+          icon={Icon.Sidebar}
+          target={<IssueDetail initialIssue={issue} issueKey={issue.key} />}
+        />
 
         <Action.OpenInBrowser url={issueUrl} />
 
@@ -132,7 +123,7 @@ export default function IssueActions({
         <ChangeAssigneeSubmenu issue={issue} mutate={mutateWithOptimisticUpdate} />
 
         <Action
-          title={isAssignedToMe ? "Un-assign from Me" : "Assign to Me"}
+          title={isAssignedToMe ? "Un-Assign From Me" : "Assign to Me"}
           icon={myself.avatarUrls["32x32"]}
           shortcut={{ modifiers: ["cmd", "shift"], key: "i" }}
           onAction={assignToMe}
@@ -257,7 +248,7 @@ function ChangePrioritySubmenu({ issue, mutate }: SubmenuProps) {
               title={priority.name}
               icon={priority.iconUrl}
               onAction={() => changePriority(priority)}
-              autoFocus={priority.id === issue.fields.priority.id}
+              autoFocus={priority.id === issue.fields.priority?.id}
             />
           );
         })
